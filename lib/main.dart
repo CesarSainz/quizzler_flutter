@@ -1,4 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'question.dart';
+import 'options.dart';
+import 'optiondata.dart';
+import 'questionList.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 void main() => runApp(Quizzler());
 
@@ -28,32 +35,87 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
 
+  //Icons
   static Icon correctAnswer = Icon(Icons.check,color: Colors.green);
   static Icon wrongAnswer = Icon(Icons.close,color: Colors.red);
 
+
+
+
   List<Icon> scoreKeeper = [];
-  List<String> questionList = [];
+  final double buttonPadding = 7.0;
+  final double buttonFontSize = 17.0;
+  final quizList = QuizList();
+
+
+
+
+  void correctOption(i){
+
+    int storeCurrentAnswer = quizList.getQuestionAnswer();
+
+    if(quizList.getQuestionNumber() >= quizList.getAllQuestions().length-1){
+
+      if(storeCurrentAnswer == i){
+        scoreKeeper.add(correctAnswer);
+      }
+      else{
+        scoreKeeper.add(wrongAnswer);
+      }
+
+      int result = 0;
+      for(int i=0;i<scoreKeeper.length-1;i++){
+        if(scoreKeeper[i] == correctAnswer){
+          result++;
+        }
+        else{
+          continue;
+        }
+
+      }
+      Alert(
+        context: context,
+        title: "¡Quiz terminado!",
+        desc: "Tu resultado es de $result.",
+      ).show();
+
+      setState(() {
+      quizList.AlertReset();
+      scoreKeeper = [];
+      });
+    }
+    else{
+
+      print(quizList.getAllQuestions().length);
+      if(storeCurrentAnswer == i){
+        scoreKeeper.add(correctAnswer);
+      }
+      else{
+        scoreKeeper.add(wrongAnswer);
+      }
+      quizList.nextQuestion();
+  }
+  }
+
+
 
 
   @override
   Widget build(BuildContext context) {
-
-
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Expanded(
-          flex: 5,
+          flex: 3,
           child: Padding(
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                quizList.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 25.0,
+                  fontSize: 23.0,
                   color: Colors.white,
                 ),
               ),
@@ -62,20 +124,20 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(buttonPadding),
             child: FlatButton(
-              textColor: Colors.white,
-              color: Colors.green,
+              textColor: Colors.green,
+              color: Color.fromRGBO(65, 182, 28, 100),
               child: Text(
-                'True',
+                optionList[quizList.getQuestionNumber()].questionOption1,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20.0,
+                  fontSize: buttonFontSize,
                 ),
               ),
               onPressed: () {
                 setState(() {
-                scoreKeeper.add(correctAnswer);
+                  correctOption(1);
                 });//The user picked true.
               },
             ),
@@ -83,19 +145,61 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(buttonPadding),
             child: FlatButton(
               color: Colors.red,
               child: Text(
-                'False',
+                optionList[quizList.getQuestionNumber()].questionOption2,
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: buttonFontSize,
                   color: Colors.white,
                 ),
               ),
               onPressed: () {
                 setState(() {
-                    scoreKeeper.add(wrongAnswer);
+                  correctOption(2);
+                });
+                //The user picked false.
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(buttonPadding),
+            child: FlatButton(
+              color: Colors.orange,
+              child: Text(
+                optionList[quizList.getQuestionNumber()].questionOption3,
+                style: TextStyle(
+                  fontSize: buttonFontSize,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  correctOption(3);
+                });
+                //The user picked false.
+              },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(buttonPadding),
+            child: FlatButton(
+              color: Colors.blue,
+              child: Text(
+                optionList[quizList.getQuestionNumber()].questionOption4,
+                style: TextStyle(
+                  fontSize: buttonFontSize,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  correctOption(4);
                 });
                 //The user picked false.
               },
